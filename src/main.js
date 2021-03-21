@@ -4,7 +4,14 @@ import router from './router'
 
 Vue.config.productionTip = false
 
+import stratInfoData from '../src/data/stratInfoData.js'
+
+let data = {
+  stratInfoData: stratInfoData,
+}
+
 new Vue({
   router,
+  data,
   render: h => h(App)
 }).$mount('#app')
