@@ -52,7 +52,7 @@
     </div>
 
     <div class='footerBox'>
-      <a class='footerLink' href='https://github.com/DlittlemanDungeon/AHatInTimeWebsiteWithAPI'>GitHub Repository</a>
+      <a class='footerLink' href='https://github.com/DlittlemanDungeon/AHatInTimeWebsiteVueCli'>GitHub Repository</a>
       <a class='footerLink' href='https://gearsforbreakfast.com/games/a-hat-in-time/'>A Hat in Time Website</a>
       <a class='footerLink' href='https://store.steampowered.com/app/253230/A_Hat_in_Time/'>A Hat in Time Steam</a>
      </div>
