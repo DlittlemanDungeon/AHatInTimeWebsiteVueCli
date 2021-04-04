@@ -24,7 +24,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 export default {
   name: 'StratInfo',
   props: {
@@ -33,11 +32,10 @@ export default {
       tutorialVideos: Array,
   },
   created() {
-    this.getInfo();
   },
   methods: {
       async getInfo() {
-          let url = "/api/guides/" + this.dataID;
+          /*let url = "/api/guides/" + this.dataID;
           let response = await axios.get(url);
           this.guide = response.data;
 
@@ -46,7 +44,7 @@ export default {
           this.infoParagraphs = response.data;
           let urlVid = "/api/guides/" + this.dataID + "/tutorialVideos";
           response = await axios.get(urlVid);
-          this.tutorialVideos = response.data;
+          this.tutorialVideos = response.data;*/
       }, 
   },
 }

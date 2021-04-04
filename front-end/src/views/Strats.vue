@@ -2,7 +2,7 @@
     <div class='tutorialSetup'>
         <div class='colorYellow leftBar'>
            <ul class="colorYellow list-group list-group-flush">
-               <li class="colorYellow list-group-item importantText"><a class='tutorialLink' href='#/' @click="setStrat('6068f2805b1b9651fcd605b8')">
+               <li class="colorYellow list-group-item importantText"><a class='tutorialLink' href='#/' @click="setStrat('default')">
                     Strats</a></li>
                 <div v-for='s in stratData' :key='s._id'>
                     <li class="colorYellow list-group-item lessImportantText" v-if='s.visible'>
@@ -31,7 +31,7 @@ export default {
     },
     data() {
         return {
-            strat: '6068f2805b1b9651fcd605b8',
+            strat: 'default',
             contribute: false,
             guide: {title: ""},
             infoParagraphs: [],
@@ -56,17 +56,28 @@ export default {
             }
         },
         async getInfo() {
-          let url = "/api/guides/" + this.strat;
-          let response = await axios.get(url);
-          this.guide = response.data;
+            if(this.strat.localeCompare('default') == 0) {
+                this.guide = {title: 'Strat Welcome Page!'};
+                this.infoParagraphs = [{text:`Here is where you can find the tutorials, examples, 
+                        and explanations for the strats used in speedrunning "A Hat In Time"! You 
+                        can find all of the strats currently available on this site in the naviagation 
+                        bar on the left. Not all of these strats are equal in difficulty, so I 
+                        recommend you start with the strats higher up on the bar, which are less 
+                        difficult, before heading down the the more difficult ones. Good luck!`}];
+                this.tutorialVideos = [];
+            } else {
+                let url = "/api/guides/" + this.strat;
+                let response = await axios.get(url);
+                this.guide = response.data;
 
-          let urlPar = "/api/guides/" + this.strat + "/infoParagraphs";
-          response = await axios.get(urlPar);
-          this.infoParagraphs = response.data;
-          let urlVid = "/api/guides/" + this.strat + "/tutorialVideos";
-          response = await axios.get(urlVid);
-          this.tutorialVideos = response.data;
-      }, 
+                let urlPar = "/api/guides/" + this.strat + "/infoParagraphs";
+                response = await axios.get(urlPar);
+                this.infoParagraphs = response.data;
+                let urlVid = "/api/guides/" + this.strat + "/tutorialVideos";
+                response = await axios.get(urlVid);
+                this.tutorialVideos = response.data;
+            }
+        }, 
     },
     created() {
         this.getGuides();
