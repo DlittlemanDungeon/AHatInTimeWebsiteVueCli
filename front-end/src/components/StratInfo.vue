@@ -2,6 +2,7 @@
 <div class='rightContent colorLightPurple debug'>
   <div class='text-white debug'>
     <h1 style='margin-top: 30px;'>{{guide.title}}</h1>
+    <h4 v-if='user' style='margin-top: 20px;'>Submitted by {{user.speedrunUsername}}</h4>
   </div>
   <div class='rightContentText colorLightPurple text-white debug' v-for='par in infoParagraphs' :key='par._id'>
     <p class='bigText'>{{par.text}}</p>
@@ -24,29 +25,32 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   name: 'StratInfo',
   props: {
       guide: Object,
       infoParagraphs: Array,
       tutorialVideos: Array,
+      user: {_id: 0, speedrunUsername: ""},
   },
-  created() {
+  data() {
+      return {
+          userName: ""
+      }
   },
   methods: {
-      async getInfo() {
-          /*let url = "/api/guides/" + this.dataID;
-          let response = await axios.get(url);
-          this.guide = response.data;
-
-          let urlPar = "/api/guides/" + this.dataID + "/infoParagraphs";
-          response = await axios.get(urlPar);
-          this.infoParagraphs = response.data;
-          let urlVid = "/api/guides/" + this.dataID + "/tutorialVideos";
-          response = await axios.get(urlVid);
-          this.tutorialVideos = response.data;*/
-      }, 
+      async getUserInfo() {
+          if(this.user && this.user._id != 0){
+              let url = "/api/users/" + this.user._id;
+              let response = await axios.get(url);
+              this.userName = response.data.speedrunUsername;
+          }
+      }
   },
+  created() {
+      this.getUserInfo();
+  }
 }
 </script>
 

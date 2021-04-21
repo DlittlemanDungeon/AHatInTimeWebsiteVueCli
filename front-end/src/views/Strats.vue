@@ -13,7 +13,8 @@
                     Contribute</a></li>
               </ul>
         </div>
-        <StratInfo v-if='!contribute' :guide='guide' :infoParagraphs='infoParagraphs' :tutorialVideos='tutorialVideos'/>
+        <StratInfo v-if='!contribute' :guide='guide' :infoParagraphs='infoParagraphs' :tutorialVideos='tutorialVideos'
+            :user='guide.user' />
         <StratContribute v-if='contribute'/>
     </div>
 </template>
@@ -49,7 +50,7 @@ export default {
         },
         async getGuides() {
             try {
-            const response = await axios.get("/api/guides");
+            const response = await axios.get("/api/guides/all");
             this.$root.$data.guides = response.data;
             } catch (error) {
             console.log(error);

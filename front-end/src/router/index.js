@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Strats from '../views/Strats.vue'
+import Login from '../views/Login.vue'
 
 Vue.use(VueRouter)
 
@@ -15,6 +16,11 @@ const routes = [
     path: '/strats',
     name: 'Strats',
     component: Strats
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login
   },
 ]
 

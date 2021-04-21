@@ -9,6 +9,7 @@ import stratInfoData from '../src/data/stratInfoData.js'
 let data = {
   stratInfoData: stratInfoData,
   guides: [],
+  user: null
 }
 
 new Vue({

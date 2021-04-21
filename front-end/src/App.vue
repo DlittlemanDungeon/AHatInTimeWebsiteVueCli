@@ -26,6 +26,13 @@
           <a class="nav-link disabled text-secondary" href="#" aria-disabled="true">Contact Us</a>
         </div>
 
+        <div class='navbar-nav user'>
+          <a v-if='!user' class="nav-link btn btn-warning buttonMargin" href="/login" role="button" style='color:black;'>Login</a>
+          <a v-if='user' class="nav-link text-white" href="#">{{user.speedrunUsername}}</a>
+          <a v-if='user' class="nav-link btn btn-warning buttonMargin" @click="logout" role="button" style='color:black;'>
+              Log out</a>
+        </div>
+
         <form class="form-inline navbar-nav">
           <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
           <button class="btn btn-outline-light" type="submit">Search</button>
@@ -52,6 +59,51 @@
 </div>
 </template>
 
+<script>
+import axios from 'axios';
+
+export default {
+    name: 'App',
+    components: {
+    },
+    data() {
+        return {
+        }
+    },
+    methods: {
+        async getLoggedIn() {
+            try {
+                let response = await axios.get('/api/users');
+                this.$root.$data.user = response.data.user;
+            }
+            catch (error) {
+                this.$root.$data.user = null;
+            }
+        },
+        async logout() {
+            try {
+              await axios.delete("/api/users");
+              this.$root.$data.user = null;
+              this.$router.push("/");
+              window.scrollTo(0,0);
+            } catch (error) {
+              this.$root.$data.user = null;
+            }
+        },
+    },
+    created() {
+        this.getLoggedIn();
+    },
+    computed: {
+        user() {
+            return this.$root.$data.user;
+        }
+    }
+}
+
+</script>
+
+
 <style>
 @font-face {
     font-family: "cursedCasual";
@@ -63,6 +115,11 @@
     padding: 0px;
     margin: 0px;
     font-family: 'cursedCasual';
+}
+
+.user {
+  display: flex;
+  align-items: center;
 }
 
 .top {

@@ -11,7 +11,7 @@
     </p>
   </div>
 
-  <div class='communityBox debug'>
+  <div v-if='user' class='communityBox debug'>
     <p class='mainCommunityText debug'>Submit a Strat</p>
     <form>
       <div class="form-floating mb-3" style='margin: 20px;'>
@@ -24,9 +24,9 @@
             <label for='floatingTextarea'>Paragraph 1</label>
         </div>
       </div>
-      <button type="submit" class="btn btn-warning" style='margin-bottom: 20px; margin-left: 70px;' @click="editInputGuideNum(1); preventDefault()">Add Paragraph</button>
+      <button type="submit" class="btn btn-warning" style='margin-bottom: 20px; margin-left: 70px;' @click.prevent="editInputGuideNum(1)">Add Paragraph</button>
       <button type="submit" v-if='numOfInputGuides > 1' class="btn btn-warning" style='margin-bottom: 20px; 
-                    margin-left: 70px;' @click="editInputGuideNum(-1); preventDefault()">Remove Paragraph</button>
+                    margin-left: 70px;' @click.prevent="editInputGuideNum(-1);">Remove Paragraph</button>
       <div id ='inputVideos'>
         <div class='form-floating mb-3' style='margin: 20px;'>
             <input class='form-control' id='newName1' placeholder=''>
@@ -37,20 +37,23 @@
             <label for='floatingInput'>Video Link 1</label>
         </div>
       </div>
-      <button type="submit" class="btn btn-warning" style='margin-bottom: 20px; margin-left: 70px;' @click="editInputVideoNum(1); preventDefault()">Add Video</button>
+      <button type="submit" class="btn btn-warning" style='margin-bottom: 20px; margin-left: 70px;' @click.prevent="editInputVideoNum(1);">Add Video</button>
       <button type="submit" v-if='numOfInputGuides > 0' class="btn btn-warning" style='margin-bottom: 20px; 
                     margin-left: 70px;' @click="editInputVideoNum(-1); preventDefault()">Remove Video</button>
       <br>
-      <button type="submit" class="btn btn-warning btn-lg" style='margin-bottom: 20px; margin-left: 70px;' @click="addGuide(); preventDefault()">Submit</button>
+      <button type="submit" class="btn btn-warning btn-lg" style='margin-bottom: 20px; margin-left: 70px;' @click.prevent="addGuide();">Submit</button>
     </form>
+  </div>
+  <div v-else class='communityBox debug'>
+      <p class='mainCommunityText debug'>You must be logged in to contribute to the community guides.</p>
   </div>
   <br>
 
-  <div class='communityBox debug'>
+  <div v-if='user' class='communityBox debug'>
     <p class='mainCommunityText debug'>Current Guides</p>
     <div v-for='guide in guides' :key='guide._id'>
         <div v-if='guide.visible'>
-            <button type="submit" class="btn btn-warning" style='margin-bottom: 20px; margin-left: 70px;' @click="setEditGuide(guide); preventDefault()">
+            <button type="submit" class="btn btn-warning" style='margin-bottom: 20px; margin-left: 70px;' @click.prevent="setEditGuide(guide);">
                 {{guide.title}}</button>
         </div>
     </div>
@@ -59,7 +62,9 @@
         <div class="form-floating mb-3" style='margin: 20px;'>
             <input class="form-control" :id='editGuide._id' :value='editGuide.title' placeholder="">
             <label for="floatingInput">Strat Name</label>
-            <button class="btn btn-warning" type="button" @click="deleteStrat(); preventDefault()" style='width: 30%;'>Delete Guide</button>
+            <p v-if='editGuide.user'>Submitted by {{editGuide.user.speedrunUsername}}</p>
+            <button class="btn btn-warning" type="button" @click.prevent="deleteStrat();" style='width: 30%;'>Delete Guide</button>
+            <p v-if='errorMessage'>{{errorMessage}}</p>
         </div>
         <div v-for='i in infoParagraphs' :key='i._id'>
             <div class='form-floating' style='margin: 20px;'>
@@ -78,7 +83,7 @@
             </div>
         </div>
         <button type="submit" class="btn btn-warning btn-lg" style='margin-bottom: 20px; margin-left: 70px;'
-            @click="editStrat(); preventDefault()">Save Changes</button>
+            @click.prevent="editStrat();">Save Changes</button>
     </div>
   </div>
   <br>
@@ -99,15 +104,20 @@ export default {
           infoParagraphs: [],
           tutorialVideos: [],
           editGuide: null,
+          errorMessage: ""
       }
   },
   computed: {
     stratData() {
         return this.$root.$data.stratInfoData;
+    },
+    user() {
+        return this.$root.$data.user;
     }
   },
   created() {
       this.getGuides();
+      this.getLoggedIn();
   },
   methods: {
     async addGuide() {
@@ -163,9 +173,10 @@ export default {
     },
     async getGuides() {
         try {
-        const response = await axios.get("/api/guides");
+        const response = await axios.get("/api/guides/all");
         this.guides = response.data;
         this.$root.$data.guides = this.guides;
+        console.log(response.data);
       } catch (error) {
         console.log(error);
       }
@@ -189,10 +200,16 @@ export default {
       }
     },
     async deleteStrat() {
-        let url = "/api/guides/" + this.editGuide._id;
-        await axios.delete(url);
-        this.editGuide = null;
-        await this.getGuides();
+        try {
+            this.errorMessage = "";
+            let url = "/api/guides/" + this.editGuide._id;
+            await axios.delete(url);
+            this.editGuide = null;
+            await this.getGuides();
+        }
+        catch (error) {
+            this.errorMessage = error.response.data.message;
+        }
     },
     async editStrat() {
         let newName = document.getElementById(this.editGuide._id).value;
@@ -252,9 +269,19 @@ export default {
         document.getElementById("inputVideos").innerHTML = newHTML;
     },
     setEditGuide(guide) {
+        this.errorMessage = "";
         this.editGuide = guide;
         this.getInfoParagraphs();
         this.getTutorialVideos();
+    },
+    async getLoggedIn() {
+      try {
+        let response = await axios.get('/api/users');
+        this.$root.$data.user = response.data.user;
+      }
+      catch (error) {
+        this.$root.$data.user = null;
+      }
     },
   }
 }
